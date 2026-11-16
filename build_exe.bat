@@ -38,8 +38,13 @@ pipenv run pyinstaller --noconfirm --clean --onedir --name PainelKiraGame ^
 if errorlevel 1 goto erro
 rmdir /s /q build_exe 2>NUL
 echo.
+set "VER=?"
+for /f "tokens=2 delims==" %%v in ('findstr /b /c:"VERSAO =" painel.py') do set "VER=%%~v"
+set "VER=%VER: =%"
+set "VER=%VER:"=%"
 echo ============================================================
-echo  Pronto! Abra: PainelKiraGame\PainelKiraGame.exe
+echo  Pronto! Painel Kira Game versao %VER%
+echo  Abra: PainelKiraGame\PainelKiraGame.exe
 echo  Daqui pra frente, pra atualizar o painel basta trocar os
 echo  arquivos .py na pasta do projeto e abrir o programa de novo.
 echo  Pra levar pra outro PC, copie a pasta do projeto inteira

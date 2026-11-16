@@ -85,7 +85,7 @@ if "--rodar" in sys.argv:
 import auto  # noqa: E402
 
 PORTA = 8765
-VERSAO = "1.5"
+VERSAO = "1.6"
 
 # ================================================================ log e tarefas
 LOG = []
@@ -837,7 +837,7 @@ footer.aberto #log{height:190px;padding-bottom:10px}
 @media (max-width:1100px){.tx{grid-template-columns:1fr 1fr}.tx .caps{display:none}.im{grid-template-columns:1fr}.home{grid-template-columns:1fr}.home .destaque{grid-row:auto}}
 </style></head><body>
 <aside>
- <div class="marca"><strong>Kira Game</strong><span>tradução e mods</span></div>
+ <div class="marca"><strong>Kira Game</strong><span id="versao">tradução e mods</span></div>
  <button class="nav on" data-a="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Início</button>
  <button class="nav" data-a="textos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg>Textos</button>
  <button class="nav" data-a="imagens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg>Imagens</button>
@@ -979,6 +979,7 @@ async function status(){ST=await api('/api/status');
  const falta=PASSOS.find(([k])=>!ST.checar[k]);$('#placaPassos').classList.toggle('feito',!falta);
  $('#proximo').innerHTML=falta?`<div class="t"><b>Próximo passo: ${NOMES[falta[0]]}</b><span>${dicaPasso(falta[2])}</span></div><button class="btn pri" onclick="passo('${falta[2]}')">${falta[1]}</button>`
   :`<div class="t"><b>Tudo pronto pra trabalhar</b><span>Traduza na aba Textos, edite na aba Imagens e teste quando quiser.</span></div><button class="btn pri" onclick="vai('textos')">Abrir textos</button>`;
+ $('#versao').textContent='tradução e mods · versão '+ST.versao;
  $('#bkpInfo').textContent=ST.ultimo_backup?'Último backup: '+ST.ultimo_backup.split('-').reverse().join('/')+(ST.ultimo_backup==new Date().toLocaleDateString('sv')?' (hoje)':''):'Ainda não há backup.';
  document.querySelectorAll('#modoSel button').forEach(b=>b.classList.toggle('on',(b.dataset.m=='ingles')==ST.modo_ingles));
  $('#chave').classList.toggle('on',ST.vigia);$('#chave').setAttribute('aria-checked',ST.vigia);$('#chaveTxt').textContent=ST.vigia?'Ligada':'Desligada';
@@ -1205,7 +1206,7 @@ def main():
         print("Não consegui abrir o painel (portas ocupadas).")
         return
     url = "http://127.0.0.1:%d/" % porta
-    sys.__stdout__.write("Painel Kira Game aberto em %s\nFeche esta janela pra encerrar.\n" % url)
+    sys.__stdout__.write("Painel Kira Game %s aberto em %s\nFeche esta janela pra encerrar.\n" % (VERSAO, url))
     sys.__stdout__.flush()
     log("Painel Kira Game %s pronto." % VERSAO)
     threading.Thread(target=backup_periodico, daemon=True).start()
