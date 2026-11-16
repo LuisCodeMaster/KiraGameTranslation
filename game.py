@@ -145,6 +145,17 @@ def writeShiftJIS(f, s, encoding="shift_jis"):
     f.writeByte(0x00)
 
 
+# Acentos PT-BR: cada letra acentuada vira um caractere cirilico
+# redesenhado na fonte (data/replace/data/data/font/font.nftr)
+ACENTOS = {'á': 'а', 'à': 'б', 'â': 'в', 'ã': 'г', 'é': 'д', 'ê': 'е', 'í': 'ё', 'ó': 'ж', 'ô': 'з', 'õ': 'и', 'ú': 'й', 'ü': 'к', 'ç': 'л', 'Á': 'А', 'À': 'Б', 'Â': 'В', 'Ã': 'Г', 'É': 'Д', 'Ê': 'Е', 'Í': 'Ё', 'Ó': 'Ж', 'Ô': 'З', 'Õ': 'И', 'Ú': 'Й', 'Ç': 'К'}
+
+
+def mapAccents(s):
+    for k, v in ACENTOS.items():
+        s = s.replace(k, v)
+    return s
+
+
 def readBINString(f, encoding="shift_jis"):
     s = common.detectEncodedString(f, encoding, [0x20, 0x25, 0x4c], [(0x03, 0x34), (0x03, 0x35), (0x03, 0x36), (0x03, 0x37)])
     split = s.split("UNK(03", 1)
@@ -156,6 +167,7 @@ def readBINString(f, encoding="shift_jis"):
 
 
 def writeBINString(f, s, maxlen=0, encoding="shift_jis"):
+    s = mapAccents(s)
     split = s.split("<col", 1)
     while len(split) > 1:
         split2 = split[1].split(">", 1)
@@ -196,12 +208,67 @@ transpnsbmd = [
 ]
 
 
+# Imagens extras com a paleta corrigida (lista mantida pelo auto.py paletas)
+def lerPaletasCorrigidas(arquivo="paletas_corrigidas.txt"):
+    import os
+    if not os.path.isfile(arquivo):
+        return []
+    with open(arquivo, encoding="utf-8") as f:
+        return [l.strip() for l in f if l.strip() and not l.startswith("#")]
+
+
+paletascorrigidas = lerPaletasCorrigidas()
+
+
+def lerPaletasReais(nclrfile):
+    """Lê TODAS as paletas do NCLR com os IDs da tabela PMCP. O hacktools lê só o
+    tamanho declarado (que em alguns arquivos é menor que o real) e erra os IDs."""
+    import os, struct
+    if not os.path.isfile(nclrfile):
+        return None
+    with open(nclrfile, "rb") as f:
+        d = f.read()
+    try:
+        secoes = struct.unpack_from("<H", d, 14)[0]
+        o = 0x10
+        _, tam, bpp, _, _, _, desloc = struct.unpack_from("<4sIHHIII", d, o)
+        cores = 256 if bpp == 4 else 16
+        inicio = o + 8 + desloc
+        num = (o + tam - inicio) // (cores * 2)
+        pals = [[common.readPalette(struct.unpack_from("<H", d, inicio + (i * cores + j) * 2)[0]) for j in range(cores)] for i in range(num)]
+        if secoes != 2 or d[o + tam:o + tam + 4] != b"PMCP":
+            return None
+        _, _, n, _, off = struct.unpack_from("<4sIHHI", d, o + tam)
+        ids = struct.unpack_from("<%dH" % n, d, o + tam + 8 + off)
+    except struct.error:
+        return None
+    reais = {ids[i]: pals[i] for i in range(min(len(ids), len(pals)))}
+    if 0 not in reais and len(pals) > 0:
+        reais[0] = pals[0]
+    return reais
+
+
+def paletasReaisSeErradas(file, nclrfile, palettes):
+    """Devolve as paletas reais quando o hacktools leu os IDs errado (senão None)."""
+    if file in ignorepalindex:
+        return None  # já corrigida à mão pelo AGT Team
+    reais = lerPaletasReais(nclrfile)
+    if reais is None:
+        return None
+    if set(reais.keys()) - {0} == set(palettes.keys()) - {0}:
+        return None
+    return reais
+
+
 def readImage(infolder, file, extension):
     palettefile = file.replace(extension, ".NCLR")
     mapfile = file.replace(extension, ".NSCR")
     cellfile = file.replace(extension, ".NCER")
-    ignorepal = file in ignorepalindex
+    ignorepal = file in ignorepalindex or file in paletascorrigidas
     palettes, image, map, cell, width, height = nitro.readNitroGraphic(infolder + palettefile, infolder + file, infolder + mapfile, infolder + cellfile, ignorepal)
+    reais = paletasReaisSeErradas(file, infolder + palettefile, nitro.readNCLR(infolder + palettefile) if palettes else {})
+    if reais is not None:
+        palettes = reais
     return palettes, image, map, cell, width, height, mapfile, cellfile
 
 

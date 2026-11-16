@@ -1,0 +1,33 @@
+# Glossário: japonês=português (um por linha). Linhas vazias depois do '=' são ignoradas.
+# O 'aplicar' avisa quando uma frase tem o termo japonês mas a tradução não usa o termo escolhido.
+# Nomes de personagens
+夜神月=Light
+竜崎=Ryuzaki
+弥海砂=Misa Amane
+海砂=Misa
+夜神総一郎=Soichiro Yagami
+総一郎=Soichiro
+松田=Matsuda
+相沢=Aizawa
+模木=Mogi
+ワタリ=Watari
+リューク=Ryuk
+レム=Rem
+メロ=Mello
+ニア=Near
+火口=Higuchi
+高田清美=Kiyomi Takada
+魅上照=Teru Mikami
+南空ナオミ=Naomi Misora
+粧裕=Sayu
+# Termos do jogo (preencha do seu jeito)
+疑惑度=
+信頼度=
+発言力=
+崇拝者=
+同調=
+反論=
+対抗=
+必殺=
+検挙=
+裁き=

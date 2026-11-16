@@ -66,7 +66,7 @@ def repack(no_rom, bin, sce, img, nsbmd):
                     f.seek(tweak[0])
                     f.writeUInt(tweak[1])
     if all or img:
-        nitro.repackIMG("data/work_IMG/", "data/extract_XAP/", "data/repack_XAP/", ".NCGR", clean=True, readfunc=game.readImage)
+        nitro.repackIMG("data/work_IMG/", "data/base_XAP/" if os.path.isdir("data/base_XAP/") else "data/extract_XAP/", "data/repack_XAP/", ".NCGR", clean=True, readfunc=game.readImage)
     if all or nsbmd:
         common.copyFolder("data/extract/data/data/model/", "data/repack/data/data/model/")
         nitro.repackNSBMD("data/work_NSBMD/", "data/extract/data/data/model/", "data/repack/data/data/model/", readfunc=game.readNSBMD, writefunc=game.writeNSBMD)

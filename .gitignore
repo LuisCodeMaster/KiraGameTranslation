@@ -1,3 +1,4 @@
+# --- da ferramenta original ---
 __pycache__
 .DS_Store
 *.log
@@ -5,3 +6,29 @@ data
 *.nds
 *.sav
 notes.md
+
+# --- material do jogo: nunca sobe ---
+arm9.zip
+arm9_envio/
+imagens/
+materiais/
+*.nftr
+*.xdelta
+
+# --- trabalho pessoal: skins e traduções usam arte/texto do jogo ---
+skins/
+traducao/
+backups/
+lancamento/
+
+# --- gerado pelo painel ---
+PainelKiraGame/
+build_exe/
+auto_config.json
+catalogo_imagens.html
+galeria_imagens.html
+paletas.html
+paletas_corrigidas.txt
+previa.html
+*.tmp
+* (1).py

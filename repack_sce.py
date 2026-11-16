@@ -60,12 +60,16 @@ def run():
                         newsjis = ""
                         if sjis in section:
                             newsjis = section[sjis].pop(0)
+                            newsjis = game.mapAccents(newsjis)
                             if len(section[sjis]) == 0:
                                 del section[sjis]
                         if newsjis != "":
                             if newsjis == "!":
                                 newsjis = ""
-                            if file == "scenario2.bin" and "|" not in newsjis:
+                            if newsjis.startswith("{{"):
+                                # "{{" no começo: texto já formatado (ex.: vindo do patch em inglês), não quebrar de novo
+                                newsjis = newsjis[2:]
+                            elif file == "scenario2.bin" and "|" not in newsjis:
                                 tryfit = common.wordwrap(newsjis, glyphs, game.wordwrapkira1, game.detectTextCode)
                                 if tryfit.count("|") > 0:
                                     tryfit = common.wordwrap(newsjis, glyphs, game.wordwrapkira2, game.detectTextCode)
